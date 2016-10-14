@@ -1,0 +1,185 @@
+<modification>
+
+    <id>هس ّوحخقفشرف</id>
+    <version>1.0.0</version>
+    <vqmver>2.1.1</vqmver>
+    <author>PHP0</author>
+
+    <file name="admin/view/template/sale/order_list_total_filter.tpl">
+
+
+        <operation>
+            <search position="before" index="1"><![CDATA[<div id="active-filters">]]></search>
+
+
+            <add><![CDATA[
+
+             <div  class="table-responsive" id="wrapper">
+                <ul id="Divimportant" class="list-group"><ul/>
+             </div>
+
+			]]></add>
+
+        </operation>
+
+
+        <operation>
+            <search position="replace" index="1"><![CDATA[$(document).ready(function() {]]></search>
+
+
+            <add><![CDATA[
+
+            <script type="text/javascript">
+
+
+
+                  function seImportant(id) {
+
+                    $.ajax({
+                        url: 'index.php?route=sale/order/setImportant&token=<?php echo $token; ?>&order_id=' + id,
+                        dataType: 'json',
+                        success: function (json) {
+                         notie.alert(3,json.succ, 2.5);
+                         $("#Divimportant").empty();
+                         getImportant();
+
+                         $('#bt-'+id).hide( "slow");
+
+
+
+                        }
+                    });
+
+
+                }
+
+
+
+                 function getImportant() {
+
+                      $.ajax({
+                                    type: 'GET',
+                                    dataType: "json",
+                                    url: 'index.php?route=sale/order/getImportant&token=<?php echo $token; ?>',
+                                    success: function (data) {
+
+                                        $('#ListCustemerTpl').tmpl(data).appendTo('#Divimportant');
+                                        //notie.alert(3, 'لايمكن تحميل قائمة العملاء', 2.5);
+
+                                    }
+                                });
+
+
+
+
+                 }
+
+
+
+            $(document).ready(function() {
+
+            getImportant();
+
+
+
+
+
+
+
+			]]></add>
+
+        </operation>
+
+
+
+        <operation>
+            <search position="replace" index="1"><![CDATA[<script type="text/javascript"><!--]]></search>
+
+
+            <add><![CDATA[
+
+                       <link rel="stylesheet" type="text/css" href="./view/javascript/notie/notie.css">
+                       <script  src="./view/javascript/jqueryTmpl/jquery.tmpl.min.js"></script>
+                       <script  src="./view/javascript/notie/notie.min.js"></script>
+
+
+                    <script id="ListCustemerTpl" type="x-jquery-tmpl">
+
+                    <li class="list-group-item">
+                    <a   href="index.php?route=sale/order/info&token=<?php echo $token; ?>&order_id=${order_id}" class="showRight2"><span>${Name}<small>${firstname}</small></span></a>
+                   <button  onclick="seImportant('${order_id}');"   type="button" class="btn btn-info text-left">الغاء</button>
+                   </li>
+                    </script>
+
+
+
+			]]></add>
+
+        </operation>
+
+
+         <operation>
+            <search position="after" index="1"><![CDATA[<a href="<?php echo $order['delete']; ?>" id="button-delete<?php echo $order['order_id']; ?>" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>]]></search>
+
+
+
+            <add><![CDATA[
+
+
+                   <button  onclick="seImportant('<?php echo $order['order_id']; ?>');" id='bt-<?php echo $order['order_id']; ?>'  type="button" class="btn btn-info">هام</button>
+
+
+
+
+			]]></add>
+
+        </operation>
+
+
+
+
+
+
+    </file>
+    <file name="admin/controller/sale/order.php">
+        <operation>
+            <search position="before" index="1"><![CDATA[public function getForm() {]]></search>
+
+
+            <add><![CDATA[
+
+
+            public function getImportant() {
+
+                $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order WHERE isImportant = 1");
+                echo json_encode($query->rows);
+
+             }
+
+
+
+
+         public function setImportant() {
+
+                $order_id = $this->request->get['order_id'];
+
+                $sql="UPDATE `". DB_PREFIX ."order` SET `isImportant` =  !`isImportant`  WHERE `" . DB_PREFIX . "order`.`order_id` = '" . (int)$order_id . "'";
+
+                $query = $this->db->query($sql);
+
+                echo json_encode(array('succ'=>$query));
+
+         }
+
+
+
+
+
+
+			]]></add>
+
+        </operation>
+    </file>
+
+
+</modification>
