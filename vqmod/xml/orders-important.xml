@@ -1,6 +1,6 @@
 <modification>
 
-    <id>هس ّوحخقفشرف</id>
+    <id>importantOrder</id>
     <version>1.0.0</version>
     <vqmver>2.1.1</vqmver>
     <author>PHP0</author>
@@ -106,8 +106,8 @@
                     <script id="ListCustemerTpl" type="x-jquery-tmpl">
 
                     <li class="list-group-item">
-                    <a   href="index.php?route=sale/order/info&token=<?php echo $token; ?>&order_id=${order_id}" class="showRight2"><span>${Name}<small>${firstname}</small></span></a>
-                   <button  onclick="seImportant('${order_id}');"   type="button" class="btn btn-info text-left">الغاء</button>
+                    <a   href="index.php?route=sale/order/info&token=<?php echo $token; ?>&order_id=${order_id}" class="showRight2"><span>${name}<small>${firstname}</small></span></a>
+                   <div class="pull-right"><button  onclick="seImportant('${order_id}');"   type="button" class="btn btn-info text-left">الغاء</button></div>
                    </li>
                     </script>
 
@@ -125,11 +125,10 @@
 
             <add><![CDATA[
 
-
+                    <?php if($order['isImportant']==0){ ?>
                    <button  onclick="seImportant('<?php echo $order['order_id']; ?>');" id='bt-<?php echo $order['order_id']; ?>'  type="button" class="btn btn-info">هام</button>
 
-
-
+                    <?php } ?>
 
 			]]></add>
 
@@ -140,14 +139,15 @@
 
 
 
+
     </file>
+
+
     <file name="admin/controller/sale/order.php">
         <operation>
             <search position="before" index="1"><![CDATA[public function getForm() {]]></search>
 
-
             <add><![CDATA[
-
 
             public function getImportant() {
 
@@ -155,9 +155,6 @@
                 echo json_encode($query->rows);
 
              }
-
-
-
 
          public function setImportant() {
 
@@ -171,15 +168,37 @@
 
          }
 
+			]]></add>
 
+        </operation>
 
+        <operation>
+            <search position="after" index="1"><![CDATA[$fields = array(]]></search>
 
+            <add><![CDATA[
 
+                'isImportant' => array(
+                  'table' => 'order',
+                  'alias' => 'o',
+                  'type' => 'text',
+                ),
 
 			]]></add>
 
         </operation>
+
+
+
+
+
+
     </file>
+
+
+
+
+
+
 
 
 </modification>
